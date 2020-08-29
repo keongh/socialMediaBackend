@@ -27,7 +27,7 @@ public class User {
     private String role = "USER";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @JsonSerialize(using = ToStringSerializer.class)

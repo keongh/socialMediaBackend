@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+@CrossOrigin(origins = "*", allowCredentials = "true", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.DELETE, RequestMethod.PUT})
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class UserController {
 
     private final UserService userService;

@@ -10,6 +10,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import static java.lang.System.getenv;
+
 @RestController
 public class HomeResource {
 
@@ -22,7 +24,7 @@ public class HomeResource {
     @Autowired
     private JwtUtil jwtTokenUtil;
 
-    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true", methods=RequestMethod.POST)
+    @CrossOrigin(origins = "https://socialmedia-frotend.herokuapp.com", allowCredentials = "true", methods=RequestMethod.POST)
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         try {
