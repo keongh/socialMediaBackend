@@ -8,7 +8,7 @@ import com.example.socialmedia.models.Comment;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "https://socialmedia-frontend.herokuapp.com", allowCredentials = "true")
+@CrossOrigin(origins = "*", allowCredentials = "true")
 public class CommentController {
 
     private final CommentService commentService;
