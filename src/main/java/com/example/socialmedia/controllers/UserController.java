@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = "https://socialmedia-frotend.herokuapp.com", allowCredentials = "true")
 public class UserController {
 
     private final UserService userService;

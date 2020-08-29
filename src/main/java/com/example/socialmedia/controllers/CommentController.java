@@ -8,7 +8,7 @@ import com.example.socialmedia.models.Comment;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = "https://socialmedia-frontend.herokuapp.com", allowCredentials = "true")
 public class CommentController {
 
     private final CommentService commentService;
@@ -24,7 +24,7 @@ public class CommentController {
     }
 
     @GetMapping("/posts/{id}/comments")
-    public List<Comment> getAllComments(@PathVariable long postId) throws Exception {
-        return commentService.getAllComments(postId);
+    public List<Comment> getAllComments(@PathVariable long id) throws Exception {
+        return commentService.getAllComments(id);
     }
 }
