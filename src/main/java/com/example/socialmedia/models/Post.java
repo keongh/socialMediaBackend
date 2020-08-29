@@ -17,7 +17,7 @@ public class Post {
     private LocalDateTime createdAt;
     private String postedBy;
 
-    @OneToMany
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
     public Post() {
