@@ -1,5 +1,6 @@
 package com.example.socialmedia.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,6 +18,8 @@ public class Comment {
    private LocalDateTime createdAt;
 
    @ManyToOne
+   @JoinColumn(name = "post_id")
+   @JsonIgnore
    private Post post;
 
    public Comment() {
