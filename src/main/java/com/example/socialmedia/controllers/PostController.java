@@ -2,21 +2,26 @@ package com.example.socialmedia.controllers;
 
 import com.example.socialmedia.Services.PostService;
 import com.example.socialmedia.models.Post;
+import com.example.socialmedia.util.JwtUtil;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin(origins = "*", allowCredentials = "true", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
 public class PostController {
 
     private final PostService postService;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public PostController(PostService postService) {
+    public PostController(PostService postService, JwtUtil jwtUtil) {
         this.postService = postService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/posts")
@@ -43,5 +48,27 @@ public class PostController {
     @DeleteMapping("/posts/{id}")
     public Post deletePost(@PathVariable long id) throws Exception {
         return postService.deletePost(id);
+    }
+
+    @PostMapping("/posts/{id}/like")
+    public ResponseEntity<?> likePost(@PathVariable long id, @RequestHeader(name = "Authorization") String jwt) {
+        try {
+            Post postLiked = postService.likePost(id, jwtUtil.extractUsername(jwt.substring(7)));
+            return ResponseEntity.status(200).body(postLiked);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/posts/{id}/unlike")
+    public ResponseEntity<?> unlikePost(@PathVariable long id, @RequestHeader(name = "Authorization") String jwt) {
+        try {
+           Post postUnliked = postService.unlikePost(id, jwtUtil.extractUsername(jwt.substring(7)));
+           return ResponseEntity.status(200).body(postUnliked);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 }

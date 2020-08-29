@@ -20,6 +20,9 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
+    @ManyToMany(mappedBy = "likedPosts", cascade = CascadeType.PERSIST)
+    private List<User> likes;
+
     public Post() {
 
     }
