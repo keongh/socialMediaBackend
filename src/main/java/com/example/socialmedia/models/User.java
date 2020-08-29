@@ -39,6 +39,10 @@ public class User {
     @JsonIgnore
     List<User> following;
 
+    @ManyToMany
+    @JsonIgnore
+    List<Post> likedPosts;
+
     public User() {
     }
 

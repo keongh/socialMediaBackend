@@ -1,8 +1,10 @@
 package com.example.socialmedia.Services;
 
 import com.example.socialmedia.Repositories.PostRepository;
+import com.example.socialmedia.Repositories.UserRepository;
 import com.example.socialmedia.models.Comment;
 import com.example.socialmedia.models.Post;
+import com.example.socialmedia.models.User;
 import com.example.socialmedia.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,13 @@ public class PostService {
 
     private final JwtUtil jwtUtil;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public PostService(JwtUtil jwtUtil, PostRepository postRepository) {
+    public PostService(JwtUtil jwtUtil, PostRepository postRepository, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
     public String getUsernameFromToken(String jwt) {
@@ -56,6 +60,58 @@ public class PostService {
         }
         else {
             throw new Exception(String.format("Post with id %d not found", id));
+        }
+    }
+
+    public Post likePost(long id, String userNameLikingPost) throws Exception {
+        Optional<Post> foundPost = postRepository.findById(id);
+        Optional<User> foundUser = userRepository.findByUserName(userNameLikingPost);
+        Post postToLike;
+        User userLikingPost;
+        if (foundPost.isPresent()) {
+            postToLike = foundPost.get();
+        }
+        else throw new Exception("Could not find post");
+       if (foundUser.isPresent()) {
+           userLikingPost = foundUser.get();
+       }
+       else throw new Exception("Could not find user");
+       if (postToLike.getLikes().contains(userLikingPost)) {
+           throw new Exception("User already likes this post");
+       }
+       else {
+           List<User> likedBy = postToLike.getLikes();
+           likedBy.add(userLikingPost);
+           postToLike.setLikes(likedBy);
+           userLikingPost.getLikedPosts().add(postToLike);
+           userRepository.save(userLikingPost);
+           return postRepository.save(postToLike);
+       }
+    }
+
+    public Post unlikePost(long id, String userNameUnliking) throws Exception {
+        Optional<Post> foundPost = postRepository.findById(id);
+        Optional<User> foundUser = userRepository.findByUserName(userNameUnliking);
+        Post postToUnlike;
+        User userUnliking;
+        if (foundPost.isPresent()) {
+            postToUnlike = foundPost.get();
+        }
+        else throw new Exception("Could not find post");
+        if (foundUser.isPresent()) {
+            userUnliking = foundUser.get();
+        }
+        else throw new Exception("Could not find user");
+        if (!postToUnlike.getLikes().contains(userUnliking)) {
+            throw new Exception("User does not like this post!");
+        }
+        else {
+            List<User> likes = postToUnlike.getLikes();
+            likes.remove(userUnliking);
+            postToUnlike.setLikes(likes);
+            userUnliking.getLikedPosts().remove(postToUnlike);
+            userRepository.save(userUnliking);
+            return postRepository.save(postToUnlike);
         }
     }
 }
