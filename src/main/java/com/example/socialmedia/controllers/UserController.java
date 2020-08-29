@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController
 @CrossOrigin(origins = "*", allowCredentials = "true")
+@RestController
 public class UserController {
 
     private final UserService userService;
