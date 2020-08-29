@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -63,6 +64,44 @@ public class UserService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception(String.format("Could not update user %d",  id));
+        }
+    }
+
+    public void followUser(long id, String requestingUserName) {
+        try {
+            User userToFollow = getUser(id);
+            List<User> followers = userToFollow.getFollowers();
+            User requestingUser = userRepository.findByUserName(requestingUserName).get();
+            followers.add(requestingUser);
+            userToFollow.setFollowers(followers);
+            userRepository.save(userToFollow);
+            userRepository.save(requestingUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void unfollowUser(long id, String requestingUser) throws Exception {
+        try {
+            User userToUnfollow = getUser(id);
+            List<User> followers = userToUnfollow.getFollowers();
+            User userUnfollowing = userRepository.findByUserName(requestingUser).get();
+            boolean following = false;
+            for (User u : followers) {
+                if (userUnfollowing.getUserName().equals(requestingUser)) {
+                    following = true;
+                }
+            }
+            if (!following) {
+                throw new Exception("You are not following this user");
+            }
+            else {
+                followers.remove(userUnfollowing);
+                userRepository.save(userToUnfollow);
+                userRepository.save(userUnfollowing);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

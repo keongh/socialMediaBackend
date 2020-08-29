@@ -53,4 +53,27 @@ public class UserController {
            return ResponseEntity.status(404).body(id);
         }
     }
+
+    @PostMapping("/user/{id}/followers")
+    public ResponseEntity<?> followUser(@PathVariable long id, @RequestHeader(name = "Authorization") String jwt) {
+        String requestingUser = jwtUtil.extractUsername(jwt.substring(7));
+        try {
+            userService.followUser(id, requestingUser);
+            return ResponseEntity.status(201).body(userService.getUser(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(id);
+        }
+    }
+
+    @DeleteMapping("/user/{id}/followers")
+    public ResponseEntity<?> unfollowUser(@PathVariable long id, @RequestHeader(name = "Authorization") String jwt) {
+        try {
+            String requestingUser = jwtUtil.extractUsername(jwt.substring(7));
+            userService.unfollowUser(id, requestingUser);
+            return ResponseEntity.status(200).body(userService.getUser(id));
+        }
+        catch (Exception e) {
+                return ResponseEntity.status(404).body(id);
+        }
+    }
 }
