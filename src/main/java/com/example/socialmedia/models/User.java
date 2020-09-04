@@ -1,6 +1,7 @@
 package com.example.socialmedia.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
@@ -33,6 +34,7 @@ public class User {
     private final LocalDateTime registrationDate = LocalDateTime.now();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JsonIgnore
     List<User> followers;
 
     @ManyToMany(mappedBy = "followers")
@@ -42,6 +44,10 @@ public class User {
     @ManyToMany
     @JsonIgnore
     List<Post> likedPosts;
+
+    @OneToMany(mappedBy = "author")
+    @JsonIgnore
+    List<Post> createdPosts;
 
     public User() {
     }

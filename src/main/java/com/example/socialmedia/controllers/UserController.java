@@ -3,10 +3,11 @@ package com.example.socialmedia.controllers;
 import com.example.socialmedia.Services.UserService;
 import com.example.socialmedia.models.User;
 import com.example.socialmedia.util.JwtUtil;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", allowCredentials = "true", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.DELETE, RequestMethod.PUT})
@@ -32,6 +33,11 @@ public class UserController {
        return userService.getUser(id);
     }
 
+    @GetMapping("/user")
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
     @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable long id) {
         try {
@@ -51,6 +57,18 @@ public class UserController {
             return ResponseEntity.status(200).body(updatedUser);
         } catch(Exception e) {
            return ResponseEntity.status(404).body(id);
+        }
+    }
+
+    @GetMapping("user/{id}/followers")
+    public ResponseEntity<?> getAllFollowers(@PathVariable long id) {
+        try {
+            List<User> followers;
+            followers = userService.getAllFollowers(id);
+            return ResponseEntity.ok().body(followers);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return (ResponseEntity<?>) ResponseEntity.notFound();
         }
     }
 
@@ -74,6 +92,17 @@ public class UserController {
         }
         catch (Exception e) {
                 return ResponseEntity.status(404).body(id);
+        }
+    }
+
+    @GetMapping("/user/{id}/following")
+    public ResponseEntity<?> getFollowing(@PathVariable long id, @RequestHeader(name = "Authorization") String jwt) {
+        try {
+            List<User> usersFollowing = userService.getUser(id).getFollowing();
+            return ResponseEntity.ok().body(usersFollowing);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(404).body(id);
         }
     }
 }

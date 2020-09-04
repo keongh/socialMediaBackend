@@ -37,6 +37,10 @@ public class UserService {
         else throw new Exception(String.format("Could not find user with id %d", id));
     }
 
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
     public Optional<User> deleteUser(long id) throws Exception {
         //User toDelete = getUser(id);
         Optional<User> toDelete = userRepository.deleteById(id);
@@ -72,10 +76,15 @@ public class UserService {
             User userToFollow = getUser(id);
             List<User> followers = userToFollow.getFollowers();
             User requestingUser = userRepository.findByUserName(requestingUserName).get();
-            followers.add(requestingUser);
-            userToFollow.setFollowers(followers);
-            userRepository.save(userToFollow);
-            userRepository.save(requestingUser);
+            if (userToFollow.equals(requestingUser)) {
+                throw new Exception("Cannot follow yourself");
+            }
+            else {
+                followers.add(requestingUser);
+                userToFollow.setFollowers(followers);
+                userRepository.save(userToFollow);
+                userRepository.save(requestingUser);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,6 +111,15 @@ public class UserService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public List<User> getAllFollowers(long id) throws Exception {
+        try {
+            return userRepository.findById(id).get().getFollowers();
+        }
+        catch (Exception e) {
+            throw new Exception("Could not find requested user");
         }
     }
 }

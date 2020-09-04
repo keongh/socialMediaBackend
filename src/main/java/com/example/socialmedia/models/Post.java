@@ -17,6 +17,9 @@ public class Post {
     private LocalDateTime createdAt;
     private String postedBy;
 
+    @ManyToOne
+    private User author;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
