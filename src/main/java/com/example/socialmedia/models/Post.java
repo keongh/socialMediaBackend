@@ -17,10 +17,13 @@ public class Post {
     private LocalDateTime createdAt;
     private String postedBy;
 
+    @ManyToOne
+    private User author;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
-    @ManyToMany(mappedBy = "likedPosts", cascade = CascadeType.PERSIST)
+    @ManyToMany(mappedBy = "likedPosts", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<User> likes;
 
     public Post() {

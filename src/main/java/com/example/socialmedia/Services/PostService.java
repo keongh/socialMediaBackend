@@ -39,6 +39,7 @@ public class PostService {
     public Post createPost(Post newPost, String jwt) {
         newPost.setPostedBy(getUsernameFromToken(jwt.substring(7)));
         newPost.setCreatedAt(LocalDateTime.now());
+        newPost.setAuthor(userRepository.findByUserName(newPost.getPostedBy()).get());
         return postRepository.save(newPost);
     }
 

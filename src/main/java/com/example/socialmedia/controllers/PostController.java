@@ -3,7 +3,6 @@ package com.example.socialmedia.controllers;
 import com.example.socialmedia.Services.PostService;
 import com.example.socialmedia.models.Post;
 import com.example.socialmedia.util.JwtUtil;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
