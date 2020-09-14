@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -35,19 +36,19 @@ public class User {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JsonIgnore
-    List<User> followers;
+    List<User> followers = new ArrayList<>();
 
     @ManyToMany(mappedBy = "followers")
     @JsonIgnore
-    List<User> following;
+    List<User> following = new ArrayList<>();
 
     @ManyToMany
     @JsonIgnore
-    List<Post> likedPosts;
+    List<Post> likedPosts = new ArrayList<>();
 
     @OneToMany(mappedBy = "author")
     @JsonIgnore
-    List<Post> createdPosts;
+    List<Post> createdPosts = new ArrayList<>();
 
     public User() {
     }

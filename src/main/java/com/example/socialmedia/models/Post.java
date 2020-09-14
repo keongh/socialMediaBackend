@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -21,10 +22,10 @@ public class Post {
     private User author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     @ManyToMany(mappedBy = "likedPosts", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private List<User> likes;
+    private List<User> likes = new ArrayList<>();
 
     public Post() {
 
