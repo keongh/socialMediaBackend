@@ -24,8 +24,12 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User createNewUser(@RequestBody User newUser) {
-        return userService.createUser(newUser);
+    public ResponseEntity<?> createNewUser(@RequestBody User newUser) {
+        try {
+            return ResponseEntity.status(201).body(userService.createUser(newUser));
+        } catch (Exception e) {
+            return ResponseEntity.status(409).body(e.getMessage());
+        }
     }
 
     @GetMapping("/user/{id}")

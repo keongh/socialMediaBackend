@@ -26,9 +26,22 @@ public class UserService {
         newUser.setPassword(encodedPassword);
     }
 
-    public User createUser(User newUser) {
+    public User createUser(User newUser) throws Exception {
         setUserPassword(newUser);
-        return userRepository.save(newUser);
+        if (validateUsername(newUser.getUserName())) {
+            return userRepository.save(newUser);
+        } else {
+            throw new Exception("Username already in use");
+        }
+    }
+
+    public boolean validateUsername(String username) {
+        if (userRepository.findByUserName(username).isPresent()) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     public User getUser(long id) throws Exception {
@@ -55,7 +68,12 @@ public class UserService {
                 throw new Exception("Cannot update another user's information");
             }
             if (!toUpdate.getUserName().equals(newParams.getUserName())) {
-                toUpdate.setUserName(newParams.getUserName());
+                if (validateUsername(newParams.getUserName())) {
+                    toUpdate.setUserName(newParams.getUserName());
+                }
+                else {
+                    throw new Exception("Username already in use");
+                }
             }
             if (!toUpdate.getRole().equals(newParams.getRole())) {
                 toUpdate.setRole(newParams.getRole());
