@@ -3,7 +3,6 @@ package com.example.socialmedia.controllers;
 import com.example.socialmedia.Services.UserService;
 import com.example.socialmedia.models.User;
 import com.example.socialmedia.util.JwtUtil;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -83,7 +82,12 @@ public class UserController {
             userService.followUser(id, requestingUser);
             return ResponseEntity.status(201).body(userService.getUser(id));
         } catch (Exception e) {
-            return ResponseEntity.status(404).body(id);
+            if (e.getMessage().equals("Cannot follow yourself")) {
+                return ResponseEntity.status(200).body("");
+            }
+            else {
+                return ResponseEntity.status(404).body(id);
+            }
         }
     }
 

@@ -19,12 +19,14 @@ public class PostService {
     private final JwtUtil jwtUtil;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public PostService(JwtUtil jwtUtil, PostRepository postRepository, UserRepository userRepository) {
+    public PostService(JwtUtil jwtUtil, PostRepository postRepository, UserRepository userRepository, UserService userService) {
         this.jwtUtil = jwtUtil;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public String getUsernameFromToken(String jwt) {
@@ -64,19 +66,19 @@ public class PostService {
         }
     }
 
-    public Post likePost(long id, String userNameLikingPost) throws Exception {
+    public Post getPost(long id) throws Exception {
         Optional<Post> foundPost = postRepository.findById(id);
-        Optional<User> foundUser = userRepository.findByUserName(userNameLikingPost);
-        Post postToLike;
-        User userLikingPost;
         if (foundPost.isPresent()) {
-            postToLike = foundPost.get();
+            return foundPost.get();
         }
-        else throw new Exception("Could not find post");
-       if (foundUser.isPresent()) {
-           userLikingPost = foundUser.get();
-       }
-       else throw new Exception("Could not find user");
+        else {
+            throw new Exception("Could not find post");
+        }
+    }
+
+    public Post likePost(long id, String userNameLikingPost) throws Exception {
+       Post postToLike = getPost(id);
+       User userLikingPost = userService.getUser(userNameLikingPost);
        if (postToLike.getLikes().contains(userLikingPost)) {
            throw new Exception("User already likes this post");
        }

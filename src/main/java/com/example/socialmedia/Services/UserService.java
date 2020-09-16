@@ -50,12 +50,17 @@ public class UserService {
         else throw new Exception(String.format("Could not find user with id %d", id));
     }
 
+    public User getUser(String userName) throws Exception {
+        Optional<User> foundUser = userRepository.findByUserName(userName);
+        if (foundUser.isPresent()) return foundUser.get();
+        else throw new Exception(String.format("Could not find user with username %s", userName));
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     public Optional<User> deleteUser(long id) throws Exception {
-        //User toDelete = getUser(id);
         Optional<User> toDelete = userRepository.deleteById(id);
         if (toDelete.isPresent()) return toDelete;
         else throw new Exception(String.format("Could not delete user with id %d", id));
@@ -89,22 +94,22 @@ public class UserService {
         }
     }
 
-    public void followUser(long id, String requestingUserName) {
-        try {
-            User userToFollow = getUser(id);
-            List<User> followers = userToFollow.getFollowers();
-            User requestingUser = userRepository.findByUserName(requestingUserName).get();
-            if (userToFollow.equals(requestingUser)) {
-                throw new Exception("Cannot follow yourself");
-            }
-            else {
-                followers.add(requestingUser);
-                userToFollow.setFollowers(followers);
-                userRepository.save(userToFollow);
-                userRepository.save(requestingUser);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void followUser(long id, String requestingUserName) throws Exception {
+        User userToFollow = getUser(id);
+        List<User> followers = userToFollow.getFollowers();
+        User requestingUser = getUser(requestingUserName);
+        List<User> following = requestingUser.getFollowing();
+        if (userToFollow.equals(requestingUser)) {
+            throw new Exception("Cannot follow yourself");
+        } else if (following.contains(userToFollow)) {
+            throw new Exception("You are already following this user");
+        } else {
+            followers.add(requestingUser);
+            userToFollow.setFollowers(followers);
+            following.add(userToFollow);
+            requestingUser.setFollowing(following);
+            userRepository.save(userToFollow);
+            userRepository.save(requestingUser);
         }
     }
 
@@ -112,18 +117,16 @@ public class UserService {
         try {
             User userToUnfollow = getUser(id);
             List<User> followers = userToUnfollow.getFollowers();
-            User userUnfollowing = userRepository.findByUserName(requestingUser).get();
-            boolean following = false;
-            for (User u : followers) {
-                if (userUnfollowing.getUserName().equals(requestingUser)) {
-                    following = true;
-                }
-            }
-            if (!following) {
+            User userUnfollowing = getUser(requestingUser);
+            List<User> following = userUnfollowing.getFollowing();
+            if (!followers.contains(userUnfollowing)) {
                 throw new Exception("You are not following this user");
             }
             else {
                 followers.remove(userUnfollowing);
+                following.remove(userToUnfollow);
+                userUnfollowing.setFollowing(following);
+                userToUnfollow.setFollowers(followers);
                 userRepository.save(userToUnfollow);
                 userRepository.save(userUnfollowing);
             }
