@@ -1,7 +1,7 @@
 package com.example.socialmedia.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
@@ -22,6 +22,7 @@ public class User {
     private String userName;
 
     @NotBlank(message = "Cannot be blank")
+    @JsonIgnore
     private String password;
 
     private boolean active = true;
@@ -50,11 +51,25 @@ public class User {
     @JsonIgnore
     List<Post> createdPosts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "author")
+    @JsonIgnore
+    List<Comment> comments = new ArrayList<>();
+
     public User() {
     }
 
     public User(String userName, String password) {
         this.userName = userName;
+        this.password = password;
+    }
+
+    @JsonIgnore
+    public String getPassword() {
+        return this.password;
+    }
+
+    @JsonProperty
+    public void setPassword(final String password) {
         this.password = password;
     }
 }

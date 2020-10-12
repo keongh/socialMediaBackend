@@ -2,6 +2,7 @@ package com.example.socialmedia.Services;
 
 import com.example.socialmedia.Repositories.UserRepository;
 import com.example.socialmedia.models.User;
+import com.example.socialmedia.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,11 +15,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     public void setUserPassword(User newUser) {
@@ -143,4 +146,8 @@ public class UserService {
             throw new Exception("Could not find requested user");
         }
     }
+    public String getUsernameFromToken(String jwt) {
+        return jwtUtil.extractUsername(jwt);
+    }
+
 }

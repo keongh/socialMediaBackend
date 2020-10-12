@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackageClasses = UserRepository.class)
-public class SocialmediaApplication {
+public class SocialMediaApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SocialmediaApplication.class, args);
+        SpringApplication.run(SocialMediaApplication.class, args);
     }
 
 }

@@ -14,7 +14,8 @@ public class Comment {
    private long id;
 
    private String contents;
-   private String postedBy;
+   @ManyToOne
+   private User author;
    private LocalDateTime createdAt;
 
    @ManyToOne

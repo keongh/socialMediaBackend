@@ -16,35 +16,53 @@ public class CommentService {
     private final PostRepository postRepository;
     private final PostService postService;
     private final CommentRepository commentRepository;
+    private final UserService userService;
 
     @Autowired
-    public CommentService(PostRepository postRepository, PostService postService, CommentRepository commentRepository) {
+    public CommentService(PostRepository postRepository, PostService postService, CommentRepository commentRepository, UserService userService) {
         this.postRepository = postRepository;
         this.postService = postService;
         this.commentRepository = commentRepository;
+        this.userService = userService;
     }
 
     public List<Comment> getAllComments(long id) throws Exception {
-        Optional<Post> maybePost = postRepository.findById(id);
-        if (maybePost.isPresent()) {
-            Post post = maybePost.get();
-            return post.getComments();
-        }
-        else {
-            throw new Exception(String.format("Post with id %d not found", id));
-        }
+        Post post = postService.getPost(id);
+        return post.getComments();
     }
 
     public Comment createComment(Comment comment, long postId, String jwt) throws Exception {
-        Post post;
-        Optional<Post> maybePost = postRepository.findById(postId);
-        if (maybePost.isPresent()) {
-            post = maybePost.get();
-        }
-        else throw new Exception("Could not find post to comment on!");
-        comment.setPostedBy(postService.getUsernameFromToken(jwt.substring(7)));
+        Post post = postService.getPost(postId);
+        comment.setAuthor(userService.getUser(userService.getUsernameFromToken(jwt.substring(7))));
         comment.setPost(post);
         postService.saveComment(comment, comment.getPost());
         return commentRepository.save(comment);
+    }
+
+    public Integer getCommentCount(long postId) throws Exception {
+        List<Comment> comments = getAllComments(postId);
+        return comments.size();
+    }
+
+    public Comment getComment(long commentId) throws Exception {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        if (comment.isPresent()) {
+            return comment.get();
+        }
+        else throw new Exception("Could not find comment");
+    }
+
+    public Comment removeComment(long postId, long commentId) throws Exception {
+        Post post = postService.getPost(postId);
+        Comment comment = getComment(commentId);
+        List<Comment> commentList = post.getComments();
+        commentList.remove(comment);
+        post.setComments(commentList);
+        try {
+            getComment(commentId);
+        } catch (Exception e) {
+            throw new Exception("Could not find comment to delete");
+        }
+        return commentRepository.deleteById(commentId);
     }
 }

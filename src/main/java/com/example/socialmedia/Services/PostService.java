@@ -29,9 +29,6 @@ public class PostService {
         this.userService = userService;
     }
 
-    public String getUsernameFromToken(String jwt) {
-       return jwtUtil.extractUsername(jwt);
-    }
 
     public void saveComment(Comment comment, Post post) throws Exception {
         List<Comment> comments = post.getComments();
@@ -39,7 +36,7 @@ public class PostService {
     }
 
     public Post createPost(Post newPost, String jwt) {
-        newPost.setPostedBy(getUsernameFromToken(jwt.substring(7)));
+        newPost.setPostedBy(userService.getUsernameFromToken(jwt.substring(7)));
         newPost.setCreatedAt(LocalDateTime.now());
         newPost.setAuthor(userRepository.findByUserName(newPost.getPostedBy()).get());
         return postRepository.save(newPost);
