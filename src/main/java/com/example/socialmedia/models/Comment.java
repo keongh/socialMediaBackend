@@ -19,7 +19,6 @@ public class Comment {
    private LocalDateTime createdAt;
 
    @ManyToOne
-   @JoinColumn(name = "post_id")
    @JsonIgnore
    private Post post;
 
